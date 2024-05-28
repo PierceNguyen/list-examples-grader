@@ -34,3 +34,8 @@ java -cp ".;lib/junit-4.13.2.jar;lib/hamcrest-core-1.3.jar" org.junit.runner.JUn
 #figure out grade part
 TestsRun=`grep -o "Tests run:.." grading-area/JUnit-output.txt`
 TestsFailed=`grep -o "Failures:.." grading-area/JUnit-output.txt`
+
+a=${TestsRun:11:1}
+b=${TestsFailed:10:1}
+TestsPassed=$((a - b))
+echo "Your grade is: $TestsPassed / $a"
