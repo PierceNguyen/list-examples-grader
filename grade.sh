@@ -20,22 +20,33 @@ fi
 #copy files to grading-area
 cp student-submission/ListExamples.java grading-area
 cp TestListExamples.java grading-area
-
+cp -r lib grading-area
 # Then, add here code to compile and run, and do any post-processing of the
 # tests
 #cd grading-area
-javac -cp ".;lib/hamcrest-core-1.3.jar;lib/junit-4.13.2.jar" grading-area/*.java
+cd grading-area
+javac -cp ".;lib/hamcrest-core-1.3.jar;lib/junit-4.13.2.jar" *.java
 if [ $? -ne 0 ]; then
     echo "Your submission didn't compile"
     exit
 fi
-java -cp ".;lib/junit-4.13.2.jar;lib/hamcrest-core-1.3.jar" org.junit.runner.JUnitCore grading-area/TestListExamples > grading-area/JUnit-output.txt
+java -cp ".;lib/junit-4.13.2.jar;lib/hamcrest-core-1.3.jar" org.junit.runner.JUnitCore TestListExamples > JUnit-output.txt
 
 #figure out grade part
-TestsRun=`grep -o "Tests run:.." grading-area/JUnit-output.txt`
-TestsFailed=`grep -o "Failures:.." grading-area/JUnit-output.txt`
+
+TestsRun=`grep -o "Tests run:.." JUnit-output.txt`
+TestsFailed=`grep -o "Failures:.." JUnit-output.txt`
+
+if !(grep -q "Failures" JUnit-output.txt); then
+    TestsRun=`grep -o "(." JUnit-output.txt`
+    a=${TestsRun:1:1}
+    echo "All tests passed! Your grade is $a / $a"
+    exit
+fi
 
 a=${TestsRun:11:1}
 b=${TestsFailed:10:1}
 TestsPassed=$((a - b))
 echo "Your grade is: $TestsPassed / $a"
+
+cd ..
